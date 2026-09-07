@@ -208,29 +208,4 @@ public:
             head = tail = nullptr;
             size = 0;
         }
-
-        class Iterator{
-        private:
-            Node* current;
-        public:
-            Iterator(Node* node): current(node){}
-            T& operator*(){
-                return current->data;
-            }
-            Iterator& operator++(){
-                current = current->next;
-                return *this;
-            }
-            bool operator!=(const Iterator& other){
-                return current != other.current;
-            }
-        };
-
-        // this not use Iterator& as the return type becuase it has nowhere to point the addtess to
-        Iterator begin(){
-            return Iterator(head);
-        }
-        Iterator end(){
-            return Iterator(nullptr);
-        }
 };
