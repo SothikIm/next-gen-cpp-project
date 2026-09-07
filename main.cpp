@@ -1,0 +1,42 @@
+#include<iostream>
+#include "link_list.hpp"
+using namespace std;
+
+enum TASKSTATUS {
+    PENGIND, COMPLETE
+};
+
+struct ToDoList
+{
+    string task;
+    TASKSTATUS taskStatus;
+
+    ToDoList(string task, TASKSTATUS status): task(task), taskStatus(status){}
+
+    bool operator==(const ToDoList& other) const {
+        return task == other.task && taskStatus == other.taskStatus;
+    }
+
+    friend ostream& operator<<(ostream& os, ToDoList& tdl){
+        os << "{" << tdl.task << ", " << tdl.taskStatus << "}";
+        return os;
+    }
+};
+
+
+int main(){
+
+    ToDoList arr[] = {
+        {"Dek c", PENGIND}, {"Juk tnam", COMPLETE}, {"pherk", COMPLETE}
+    };
+    LinkList<ToDoList> tasks(arr, size(arr));
+    tasks.pushBack({"Mlbb", PENGIND});
+    tasks.display();
+
+    tasks.pop_at(tasks.getSize() - 1);
+    tasks.display();
+
+    tasks.pop({"Dek c", PENGIND});
+
+    return 0;
+}
