@@ -10,7 +10,6 @@ private:
     struct Node{
         T data;
         Node* next;
-        
         Node(const T& d): data(d), next(nullptr){}
     };
 
@@ -46,8 +45,8 @@ public:
     void display(){
         cout << "[";
         for(Node* p = head; p != nullptr; p = p->next){
-            if(p != head && p->next != nullptr){
-                    cout << ", ";
+            if(p != head){
+                cout << ", ";
             }
             cout << p->data;
         }
@@ -77,8 +76,6 @@ public:
     }
 
     void insert(const T& val, const int& index){
-            if(!head)
-                return;
             try{
                 if(index > size || index < 0)
                     throw invalid_argument("IndexError");
@@ -90,27 +87,27 @@ public:
                     pushBack(val);
                     return;
                 }
-                else{
-                    Node* p = head;
-                    for(int pos = 0; pos < index - 1; pos++){
-                        p = p->next;
-                    }
-                    Node* t = new Node(val);
-                    t->next = p->next;
-                    p->next = t;
-                    size++;
+                Node* p = head;
+                for(int pos = 0; pos < index - 1; pos++){
+                    p = p->next;
                 }
+                Node* t = new Node(val);
+                t->next = p->next;
+                p->next = t;
+                size++;
+                
             }
             catch (invalid_argument& e){
                 cerr << e.what() << endl;
             }
         }
 
-        Node* find(const T& key){
-            for(Node* i = head; i != nullptr; i = i->next){
-                if(i->data == key)
+        Node* find(const T& key) {
+            for (Node* i = head; i != nullptr; i = i->next) {
+                if (i->data == key)
                     return i;
             }
+        
             return nullptr;
         }
 
@@ -118,53 +115,61 @@ public:
             return !head;
         }
 
-        void sort(){
-            // bubble sort
-            if(!head || !head->next)
-                return;
-            bool swapped;
+        // void sort(){
+        //     // bubble sort
+        //     if(!head || !head->next)
+        //         return;
+        //     bool swapped;
 
-            do
-            {
-                swapped = false;
-                Node* cur = head;
-                Node* prev = nullptr;
-                while (!cur->next)
-                {
-                    Node* next = cur->next;
-                    if(cur->data > next->data){
-                        cur->next = next->next;
-                        next->next = cur;
-                        if(prev == nullptr)
-                            head = next;
-                        else
-                            prev->next = next;
-                        prev = next;
-                        swapped = true;
-                    }
-                    else{
-                        prev = cur;
-                        cur = cur->next;
-                    }
-                }
+        //     do
+        //     {
+        //         swapped = false;
+        //         Node* cur = head;
+        //         Node* prev = nullptr;
+        //         while (cur->next)
+        //         {
+        //             Node* next = cur->next;
+        //             if(cur->data > next->data){
+        //                 cur->next = next->next;
+        //                 next->next = cur;
+        //                 if(prev == nullptr)
+        //                     head = next;
+        //                 else
+        //                     prev->next = next;
+        //                 prev = next;
+        //                 swapped = true;
+        //             }
+        //             else{
+        //                 prev = cur;
+        //                 cur = cur->next;
+        //             }
+        //         }
                 
-            } while (swapped);
+        //     } while (swapped);
             
-        }
+        // }
 
         void pop(const T& key){
-            if(key == head->data){
+            if(!head)
+                return;
+            else if(key == head->data){
                 Node* p = head->next;
                 delete head;
                 head = p;
+                if(!head)
+                    tail = nullptr;
+                size--;
             }
             else{
                 Node* cur = head->next;
                 Node* prev = head;
                 while(cur != nullptr){
                     if(key == cur->data){
+                        if(cur == tail)
+                            tail = prev;
                         prev->next = cur->next;
                         delete cur;
+                        size--;
                         break;
                     }else{
                         prev = cur;
@@ -172,7 +177,6 @@ public:
                     }
                 }
             }
-            size--;
         }
 
         void pop_at(const int& index){
@@ -205,7 +209,12 @@ public:
                 delete cur;
                 cur = next;
             }
-            head = tail = nullptr;
+            head = nullptr;
+            tail = head;
             size = 0;
+        }
+
+        ~LinkList(){
+            clear();
         }
 };
