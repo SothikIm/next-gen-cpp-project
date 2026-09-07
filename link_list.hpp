@@ -11,14 +11,14 @@ private:
         T data;
         Node* next;
         
-        Node(const T& d): T(d), next(nullptr){}
+        Node(const T& d): data(d), next(nullptr){}
     };
 
     int size;
-    T* head;
-    T* tail;
+    Node* head;
+    Node* tail;
 public:
-    LinkList(const T& d): size(0), head(nullptr), tail(head) {}
+    LinkList(const T& d): size(0), head(new Node(d)), tail(head) {}
 
     LinkList(): head(nullptr), tail(nullptr), size(0){}
     
@@ -47,9 +47,9 @@ public:
         cout << "[";
         for(Node* p = head; p != nullptr; p = p->next){
             if(p != head && p->next != nullptr){
-                    cout << ", "
-                }
-                cout << p->data;
+                    cout << ", ";
+            }
+            cout << p->data;
         }
         cout << "]" << endl;
     }
