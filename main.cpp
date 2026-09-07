@@ -18,9 +18,10 @@ struct ToDoList
     }
 
     friend ostream& operator<<(ostream& os, ToDoList& tdl){
-        os << "{" << tdl.task << ", " << tdl.taskStatus << "}";
+        os << "{" << tdl.task << ", " << ((tdl.taskStatus == PENGIND) ? "Pending" : "Completed") << "}";
         return os;
     }
+
 };
 
 
@@ -32,11 +33,19 @@ int main(){
     LinkList<ToDoList> tasks(arr, size(arr));
     tasks.pushBack({"Mlbb", PENGIND});
     tasks.display();
-
+    
     tasks.pop_at(tasks.getSize() - 1);
     tasks.display();
 
     tasks.pop({"Dek c", PENGIND});
+    tasks.display();
+    cout << tasks.isEmpty() << endl;
+    cout << tasks.getSize() << endl;
+
+    tasks.insert({"c bay", PENGIND}, 2);
+    tasks.display();
+
+    
 
     return 0;
 }

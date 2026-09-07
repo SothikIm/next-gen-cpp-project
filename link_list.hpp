@@ -102,13 +102,13 @@ public:
             }
         }
 
-        Node* find(const T& key) {
+        bool find(const T& key) {
             for (Node* i = head; i != nullptr; i = i->next) {
                 if (i->data == key)
-                    return i;
+                    return true;
             }
         
-            return nullptr;
+            return false;
         }
 
         bool isEmpty(){
@@ -201,6 +201,17 @@ public:
             delete cur;
             size--;
         }
+
+        T& at(const int& index) {
+            if (index >= size || index < 0){
+                throw out_of_range("Index out of range");
+            }
+            Node* cur = head;
+            for (size_t i = 0; i < index; i++){ 
+                cur = cur->next;
+            }
+            return cur->data;
+        }   
 
         void clear(){
             Node* cur = head;
