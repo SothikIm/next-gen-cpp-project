@@ -226,10 +226,11 @@ public:
             }
         };
 
-        Iterator& begin(){
-            return head;
+        // this not use Iterator& as the return type becuase it has nowhere to point the addtess to
+        Iterator begin(){
+            return Iterator(head);
         }
-        Iterator& end(){
-            return nullptr;
+        Iterator end(){
+            return Iterator(nullptr);
         }
 };
