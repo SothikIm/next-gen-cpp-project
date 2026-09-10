@@ -225,6 +225,43 @@ public:
             size = 0;
         }
 
+        class Iterator{
+        private:
+            Node* current;
+        public:
+            Iterator(){}
+            Iterator(Node* node): current(node){}
+
+            T& operator*(){
+                return current->data;
+            }
+
+            Iterator& operator++(){
+                current = current->next;
+                return *this;
+            }
+
+            T* operator->(){
+                return &(current->data);
+            }
+
+            bool operator!=(const Iterator& other){
+                return current != other.current;
+            }
+
+            void operator=(Node* p){
+                current = p;
+            }
+        };
+
+        Iterator begin(){
+            return Iterator(head);
+        }
+
+        Iterator end(){
+            return nullptr;
+        }
+
         ~LinkList(){
             clear();
         }

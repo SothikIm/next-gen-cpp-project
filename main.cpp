@@ -45,7 +45,17 @@ int main(){
     tasks.insert({"c bay", PENGIND}, 2);
     tasks.display();
 
-    
+    LinkList<ToDoList>::Iterator itr;
+    for(itr = tasks.begin(); itr != tasks.end(); ++itr){
+        cout << itr->task << " ";
+    }
+    cout << endl;
+    itr = tasks.begin();
+    for(ToDoList& task : tasks){
+        if(task.task == "Juk tnam")
+            cout << task.task;
+    }
+
 
     return 0;
 }
