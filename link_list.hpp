@@ -1,7 +1,6 @@
 #pragma once
 
 #include<iostream>
-#include<list>
 using namespace std;
 
 template <typename T>
@@ -115,39 +114,39 @@ public:
             return !head;
         }
 
-        // void sort(){
-        //     // bubble sort
-        //     if(!head || !head->next)
-        //         return;
-        //     bool swapped;
+        void sort(){
+            // bubble sort
+            if(!head || !head->next)
+                return;
+            bool swapped;
 
-        //     do
-        //     {
-        //         swapped = false;
-        //         Node* cur = head;
-        //         Node* prev = nullptr;
-        //         while (cur->next)
-        //         {
-        //             Node* next = cur->next;
-        //             if(cur->data > next->data){
-        //                 cur->next = next->next;
-        //                 next->next = cur;
-        //                 if(prev == nullptr)
-        //                     head = next;
-        //                 else
-        //                     prev->next = next;
-        //                 prev = next;
-        //                 swapped = true;
-        //             }
-        //             else{
-        //                 prev = cur;
-        //                 cur = cur->next;
-        //             }
-        //         }
+            do
+            {
+                swapped = false;
+                Node* cur = head;
+                Node* prev = nullptr;
+                while (cur->next)
+                {
+                    Node* next = cur->next;
+                    if(cur->data > next->data){
+                        cur->next = next->next;
+                        next->next = cur;
+                        if(prev == nullptr)
+                            head = next;
+                        else
+                            prev->next = next;
+                        prev = next;
+                        swapped = true;
+                    }
+                    else{
+                        prev = cur;
+                        cur = cur->next;
+                    }
+                }
                 
-        //     } while (swapped);
+            } while (swapped);
             
-        // }
+        }
 
         void pop(const T& key){
             if(!head)
