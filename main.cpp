@@ -19,6 +19,7 @@ using namespace std;
 enum TASKSTATUS {
     PENGIND = 1, COMPLETED
 };
+
 struct ToDoList
 {
     string task;
@@ -39,8 +40,29 @@ struct ToDoList
     bool operator>(const ToDoList& other) const{
         return taskStatus > other.taskStatus;
     }
-
 };
+
+// Sambath
+void markTaskComplete(LinkList<ToDoList>& tasks, string taskName){
+    for (auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        if (itr->task == taskName){
+            itr->taskStatus = COMPLETED;
+            cout << "Task \"" << taskName << "\" marked as complete." << endl;
+            return;
+        }
+    }
+    cout << "Task \"" << taskName << "\" not found." << endl;
+}
+
+void viewPendingTasks(LinkList<ToDoList>& tasks){
+    cout << "Pending Tasks: " << endl;
+    for(auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        if(itr->taskStatus == PENGIND){
+            cout << "\t\t" << itr->task << endl;
+        }   
+    }
+    cout << endl;
+}
 
 void displayMenu(){
     cout << GREEN;
@@ -115,7 +137,30 @@ int main(){
             tdl = {task, taskStatus};
             tasks.display();
             break;
-        
+        case 2:
+            
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5: // Mark task as complete
+            task = inputVariable<string>("Enter your task name: ");
+            markTaskComplete(tasks, task);
+            break;
+        case 6: // View all pending task
+            if(!tasks.isEmpty())
+                viewPendingTasks(tasks);
+            else
+                cout << RED << "The task is empty" << endl << RESET;
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        case 9:
+            cout << GREEN_BOLD << "System Exit" << endl << RESET;
+            break;
         default:
             cout << RED << "Invalid Input" << RESET << endl;
             break;

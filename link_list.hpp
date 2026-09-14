@@ -224,6 +224,8 @@ public:
             size = 0;
         }
 
+        
+
         class Iterator{
         private:
             Node* current;
@@ -263,5 +265,17 @@ public:
 
         ~LinkList(){
             clear();
+        }
+
+        // Nyta
+        void update(const T& old_data, const T& new_data){
+            Node* cur = head;
+            while(cur != nullptr){
+                if(cur->data == old_data){
+                    cur->data = new_data;
+                    return;
+                }
+                cur = cur->next;
+            }
         }
 };
