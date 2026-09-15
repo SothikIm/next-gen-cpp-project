@@ -75,6 +75,7 @@ struct ToDoList
     }
 };
 LinkList<ToDoList> loadCsvFile();
+void saveTask(LinkList<ToDoList>& tasks);
 
 // Sambath
 void markTaskComplete(LinkList<ToDoList>& tasks, string taskName){
@@ -118,7 +119,7 @@ void displayMenu(){
     cout << "\t\t│  7. View Completed Tasks                             │\n";
     cout << "\t\t│  8. Search Tasks                                     │\n";
     cout << "\t\t│  9. Save Task                                        │\n";
-    cout << "\t\t│  10. Exit Application                                 │\n";
+    cout << "\t\t│  10. Exit Application                                │\n";
     cout << "\t\t└──────────────────────────────────────────────────────┘\n";
     cout << RESET;
 }
@@ -137,10 +138,10 @@ int main(){
     #endif
 
     LinkList<ToDoList> tasks = loadCsvFile();
-    tasks.display();
     ToDoList tdl;
     ToDoList oldTdl;
     string task;
+    bool update = false;
 
     int choice;
     do
@@ -153,6 +154,7 @@ int main(){
             /* code */
             cin >> tdl;
             tasks.pushBack(tdl);
+            if(!update) update = true;
             break;
         case 2:
             clearScreen();
@@ -168,14 +170,17 @@ int main(){
             cout << GREEN << "Input your old task" << RESET << endl;
             cin >> tdl;
             tasks.update(oldTdl, tdl);
+            if(!update) update = true;
             break;
         case 4: // Delete task (Nyta)
             cin >> tdl;
             tasks.pop(tdl);
+            if(!update) update = true;
             break;
         case 5: // Mark task as complete (Sambath)
             task = inputVariable<string>("Enter your task name: ");
             markTaskComplete(tasks, task);
+            if(!update) update = true;
             break;
         case 6: // View all pending task (Sambath)
             clearScreen();
@@ -188,6 +193,15 @@ int main(){
         case 7:
             break;
         case 8:
+            break;
+        case 9:
+            if(update){
+                saveTask(tasks);
+                cout << GREEN << "File Saved" << RESET << endl;
+            }
+            else{
+                cout << YELLOW << "File Not Updated" << endl;
+            }
             break;
         case 10:
             cout << GREEN_BOLD << "System Exit" << endl << RESET;
@@ -257,16 +271,30 @@ LinkList<ToDoList> loadCsvFile(){
         ToDoList tdl;
         TASKSTATUS status;
         string task;
-        string taskStatus;
-        while(getline(ifs, task, ',')){
-            getline(ifs, taskStatus);
-            status = (taskStatus == "Completed") ? COMPLETED : PENDING;
+        int taskStatus;
+        while(getline(ifs >> ws, task, ',')){
+            ifs >> ws >> taskStatus;
+            status = static_cast<TASKSTATUS>(taskStatus);
             tdl = {task, status};
             tasks.pushBack(tdl);
         }
+        ifs.close();
     }
     catch (runtime_error& e){
         cerr << RED_BOLD << e.what() << RESET << endl;
     }
     return tasks;
+}
+
+void saveTask(LinkList<ToDoList>& tasks){
+    if(tasks.isEmpty())
+        return;
+    bool first = true;
+    ofstream ofs("tasks.csv");
+    for(auto task = tasks.begin(); task != tasks.end(); ++task){
+        if(!first) ofs << '\n';
+        ofs << task->task << "," << task->taskStatus;
+        first = false;
+    }
+    ofs.close();
 }
