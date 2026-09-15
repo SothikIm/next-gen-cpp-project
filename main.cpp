@@ -252,6 +252,7 @@ void pressSpaceToContinue(){
     cout << GREEN_BOLD << "Press Enter to continue: ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << endl;
 }
 
