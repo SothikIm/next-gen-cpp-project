@@ -37,11 +37,28 @@ public:
         }
     }
 
+    LinkList& operator=(const LinkList& other){
+        if(this != &other){
+            clear();
+            Node* cur = other.head;
+            while (cur)
+            {
+                pushBack(cur);
+                cur = cur->next;
+            }
+        }
+        return *this;
+    }
+
     int getSize(){
         return size;
     }
 
     void display(){
+        if(isEmpty()){
+            cout << "The tasks is empty" << endl;
+            return;
+        }
         cout << "[";
         for(Node* p = head; p != nullptr; p = p->next){
             if(p != head){
@@ -149,14 +166,17 @@ public:
         }
 
         void pop(const T& key){
-            if(!head)
+            if(!head){
+                cout << "The list is empty" << endl;
                 return;
+            }
             else if(key == head->data){
                 Node* p = head->next;
                 delete head;
                 head = p;
                 if(!head)
                     tail = nullptr;
+                cout << "Delete successfully" << endl;
                 size--;
             }
             else{
@@ -168,6 +188,7 @@ public:
                             tail = prev;
                         prev->next = cur->next;
                         delete cur;
+                        cout << "Delete successfully" << endl;
                         size--;
                         break;
                     }else{
@@ -175,6 +196,7 @@ public:
                         cur = cur->next;
                     }
                 }
+                cout << "Element not found" << endl;
             }
         }
 
@@ -277,5 +299,6 @@ public:
                 }
                 cur = cur->next;
             }
+            cout << "The old data does not exist" << endl;
         }
 };
