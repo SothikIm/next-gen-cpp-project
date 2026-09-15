@@ -4,8 +4,7 @@
 #include<iostream>
 #include "link_list.hpp"
 #include<limits>
-#include <conio.h>
-#include<fstream>
+#include<fstream>   
 using namespace std;
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
@@ -250,13 +249,9 @@ T inputVariable(const string messages){
 }
 
 void pressSpaceToContinue(){
-    cout << GREEN_BOLD << "Press space to continue: ";
-    while (true)
-    {
-        char key = _getch();
-        if(key == ' ')
-            break;
-    }
+    cout << GREEN_BOLD << "Press Enter to continue: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
     cout << endl;
 }
 
