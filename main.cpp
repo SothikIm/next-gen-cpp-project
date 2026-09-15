@@ -4,7 +4,9 @@
 #include<iostream>
 #include "link_list.hpp"
 #include<limits>
-#include<fstream>   
+#include<fstream> 
+#include<algorithm> 
+#include<cctype>
 using namespace std;
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
@@ -16,9 +18,15 @@ using namespace std;
 #define BLUE_BOLD    "\033[1;34m"
 #define RESET   "\033[0m"
 
-template <typename T>  
-T inputVariable(const string messages);
-void pressSpaceToContinue();
+void clearScreen(){
+    #ifdef __WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+
 
 enum TASKSTATUS {
     PENDING = 1, COMPLETED
@@ -33,7 +41,11 @@ struct ToDoList
     ToDoList(string task, TASKSTATUS status): task(task), taskStatus(status){}
 
     bool operator==(const ToDoList& other) const {
-        return task == other.task && taskStatus == other.taskStatus;
+        string temp1 = task;
+        string temp2 = other.task;
+        transform(temp1.begin(), temp1.end(), temp1.begin(), ::tolower);
+        transform(temp2.begin(), temp2.end(), temp2.begin(), ::tolower);
+        return temp1.find(temp2) != string::npos && taskStatus == other.taskStatus;
     }
     
     friend ostream& operator<<(ostream& os, ToDoList& tdl){ 
@@ -73,63 +85,17 @@ struct ToDoList
         return is;
     }
 };
+
+void displayMenu();
+template <typename T>  
+T inputVariable(const string messages);
+void pressEnterToContinue();
 LinkList<ToDoList> loadCsvFile();
 void saveTask(LinkList<ToDoList>& tasks);
-
-// Sambath
-void markTaskComplete(LinkList<ToDoList>& tasks, string taskName){
-    if(tasks.isEmpty()){
-        cout << YELLOW << "No tasks available." << endl << RESET;
-        return;
-    }
-    for (auto itr = tasks.begin(); itr != tasks.end(); ++itr){
-        if(itr->task == taskName && itr->taskStatus == COMPLETED){
-            cout << YELLOW << "Task \"" << taskName << "\" already completed." << endl << RESET;
-            return;
-        }
-        else if (itr->task == taskName){
-            itr->taskStatus = COMPLETED;
-            cout << GREEN << "Task \"" << taskName << "\" marked as complete." << endl << RESET;
-            return;
-        }
-    }
-    cout << RED_BOLD << "Task \"" << taskName << "\" not found." << endl << RESET;
-}
-
-void viewPendingTasks(LinkList<ToDoList>& tasks){
-    cout << "Pending Tasks: " << endl;
-    for(auto itr = tasks.begin(); itr != tasks.end(); ++itr){
-        if(itr->taskStatus == PENDING){
-            cout << "\t\t" << itr->task << endl;
-        }   
-    }
-    cout << endl;
-}
-
-void displayMenu(){
-    cout << GREEN;
-    cout << "\t\t┌──────────────────────────────────────────────────────┐\n";
-    cout << "\t\t│  1. Add Task                                         │\n";
-    cout << "\t\t│  2. View All Tasks                                   │\n";
-    cout << "\t\t│  3. Update Task                                      │\n";
-    cout << "\t\t│  4. Delete Task                                      │\n";
-    cout << "\t\t│  5. Mark Task as Completed                           │\n";
-    cout << "\t\t│  6. View Pending Tasks                               │\n";
-    cout << "\t\t│  7. View Completed Tasks                             │\n";
-    cout << "\t\t│  8. Search Tasks                                     │\n";
-    cout << "\t\t│  9. Save Task                                        │\n";
-    cout << "\t\t│  10. Exit Application                                │\n";
-    cout << "\t\t└──────────────────────────────────────────────────────┘\n";
-    cout << RESET;
-}
-
-void clearScreen(){
-    #ifdef __WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
+void markTaskComplete(LinkList<ToDoList>& tasks, string taskName);
+void viewPendingTasks(LinkList<ToDoList>& tasks);
+void viewCompletedTasks(LinkList<ToDoList>& tasks);
+void searchTask(LinkList<ToDoList>& tasks, string keyword);
 
 int main(){
     #ifdef _WIN32
@@ -159,7 +125,7 @@ int main(){
             clearScreen();
             cout << BLUE;
             tasks.display();
-            pressSpaceToContinue();
+            pressEnterToContinue();
             cout << RESET;
             break;
         case 3: // Update task (Nyta)
@@ -187,11 +153,18 @@ int main(){
                 viewPendingTasks(tasks);
             else
                 cout << RED << "The task is empty" << endl << RESET;
-            pressSpaceToContinue();
+            pressEnterToContinue();
             break;
-        case 7:
+        case 7: // View all completed tasks (Kola)
+            clearScreen();
+            if(!tasks.isEmpty())
+                viewCompletedTasks(tasks);
+            else
+                cout << RED << "The tasks is empty" << endl << RESET;
             break;
-        case 8:
+        case 8: // Search Tasks (kola)
+            task = inputVariable<string>("Enter the task you want to search: ");
+            searchTask(tasks, task);
             break;
         case 9:
             if(update){
@@ -215,6 +188,23 @@ int main(){
     return 0;
 }
 
+void displayMenu(){
+    cout << GREEN;
+    cout << "\t\t┌──────────────────────────────────────────────────────┐\n";
+    cout << "\t\t│  1. Add Task                                         │\n";
+    cout << "\t\t│  2. View All Tasks                                   │\n";
+    cout << "\t\t│  3. Update Task                                      │\n";
+    cout << "\t\t│  4. Delete Task                                      │\n";
+    cout << "\t\t│  5. Mark Task as Completed                           │\n";
+    cout << "\t\t│  6. View Pending Tasks                               │\n";
+    cout << "\t\t│  7. View Completed Tasks                             │\n";
+    cout << "\t\t│  8. Search Tasks                                     │\n";
+    cout << "\t\t│  9. Save Task                                        │\n";
+    cout << "\t\t│  10. Exit Application                                │\n";
+    cout << "\t\t└──────────────────────────────────────────────────────┘\n";
+    cout << RESET;
+}
+
 template <typename T>  
 T inputVariable(const string messages){
     T var;
@@ -222,7 +212,7 @@ T inputVariable(const string messages){
     {
         try{
             cout << BLUE << messages;
-            // constexpr means “this can be evaluated at compile time.”
+            // constexpr means “this can be evaluated at compile time.
             if constexpr (is_same_v<T, string>){ 
                 // ws mean remove whitespace in input buffer
                 getline(cin >> ws, var); 
@@ -248,11 +238,12 @@ T inputVariable(const string messages){
     return var;
 }
 
-void pressSpaceToContinue(){
+void pressEnterToContinue(){
     cout << GREEN_BOLD << "Press Enter to continue: ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cin.get();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    char temp = cin.get();
+    if(temp != '\n')
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << endl;
 }
 
@@ -293,4 +284,72 @@ void saveTask(LinkList<ToDoList>& tasks){
         first = false;
     }
     ofs.close();
+}
+
+void markTaskComplete(LinkList<ToDoList>& tasks, string taskName){
+    if(tasks.isEmpty()){
+        cout << YELLOW << "No tasks available." << endl << RESET;
+        return;
+    }
+    transform(taskName.begin(), taskName.end(), taskName.begin(), ::tolower);
+    for (auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        string lowerCase = itr->task;
+        transform(lowerCase.begin(), lowerCase.end(), lowerCase.begin(), ::tolower);
+        if(lowerCase.find(taskName) != string::npos && itr->taskStatus == COMPLETED){
+            cout << YELLOW << "Task \"" << taskName << "\" already completed." << endl << RESET;
+            return;
+        }
+        if (itr->task == taskName){
+            itr->taskStatus = COMPLETED;
+            cout << GREEN << "Task \"" << taskName << "\" marked as complete." << endl << RESET;
+            return;
+        }
+    }
+    cout << RED_BOLD << "Task \"" << taskName << "\" not found." << endl << RESET;
+}
+
+void viewPendingTasks(LinkList<ToDoList>& tasks){
+    cout << "Pending Tasks: " << endl;
+    for(auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        if(itr->taskStatus == PENDING){
+            cout << "\t\t" << itr->task << endl;
+        }   
+    }
+    cout << endl;
+}
+
+void viewCompletedTasks(LinkList<ToDoList>& tasks){
+    cout << "Completed Tasks: " << endl;
+    bool found = false;
+    for(auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        if(itr->taskStatus == COMPLETED){
+            cout << "\t\t" << itr->task << endl;
+            found = true;
+        }
+    }
+    if(!found) cout << YELLOW << "No completed tasks." << RESET << endl;
+    cout << endl;
+}
+
+void searchTask(LinkList<ToDoList>& tasks, string keyword){
+    if(tasks.isEmpty()){
+        cout << YELLOW << "No tasks available." << endl << RESET;
+        return;
+    }
+
+    transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
+
+    bool found = false;
+    cout << "Search Results for \"" << keyword << "\":" << endl;
+    for(auto itr = tasks.begin(); itr != tasks.end(); ++itr){
+        string lowerTask = itr->task;
+        transform(lowerTask.begin(), lowerTask.end(), lowerTask.begin(), ::tolower);
+
+        if(lowerTask.find(keyword) != string::npos){
+            cout << "\t\t" << *itr << endl;
+            found = true;
+        }
+    }
+    if(!found) cout << RED_BOLD << "No matching tasks found." << RESET << endl;
+    cout << endl;
 }

@@ -180,6 +180,7 @@ public:
                 size--;
             }
             else{
+                bool found = false;
                 Node* cur = head->next;
                 Node* prev = head;
                 while(cur != nullptr){
@@ -189,6 +190,7 @@ public:
                         prev->next = cur->next;
                         delete cur;
                         cout << "Delete successfully" << endl;
+                        found = true;
                         size--;
                         break;
                     }else{
@@ -196,7 +198,8 @@ public:
                         cur = cur->next;
                     }
                 }
-                cout << "Element not found" << endl;
+                if(!found)
+                    cout << "Element not found" << endl;
             }
         }
 
